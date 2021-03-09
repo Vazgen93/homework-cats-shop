@@ -3,11 +3,12 @@ import axios from "axios";
 
 // COMPONENTS
 import CardItem from "./components/card-item/CardItem.component";
-import LoadingAnimationCat from "./components/loading-animation-cat/LoadingAnimationCat.component";
+import Loading from "./components/loading/Loading.component";
 import SearchInput from "./components/search-input/SearchInput";
 
 // STYLES
 import "./app.scss";
+import Alert from "./components/alert/Alert.component";
 
 
 class App extends React.Component {
@@ -19,24 +20,9 @@ class App extends React.Component {
             catsFromServer: [],
             alert:{id:'',active:false,value:''}
         };
-
-        console.log("Constructor...");
-    }
-
-    handleChange = (event) => {
-        //? INPUTVALUE
-        const searchValue = event.target.value;
-
-        //? SET INPUT VALUE TO STATE
-        this.setState({ search: searchValue });
-    };
-
-    alertDisable = () => {
-            this.setState({alert: {active:false,value:''}})
     }
 
     componentDidMount() {
-        console.log("componentDidMount...");
         this.setState({ isLoading: true });
         const response = axios.get("https://jsonplaceholder.typicode.com/users");
 
@@ -53,6 +39,18 @@ class App extends React.Component {
                     });
                 }, 2000);
             });
+    }
+
+    handleChange = (event) => {
+        //? INPUT VALUE
+        const searchValue = event.target.value;
+
+        //? SET INPUT VALUE TO STATE
+        this.setState({ search: searchValue });
+    };
+
+    alertDisable = () => {
+        this.setState({alert: {active:false,title:''}})
     }
 
     deleteCatHandle = (id) => {
@@ -87,20 +85,21 @@ class App extends React.Component {
             this.setState({alert: {
                     id:selectedUserItem.id,
                     active:true,
-                    value:selectedUserItem.name
+                    title:selectedUserItem.name
             }})
         }
     }
 
     render() {
-        console.log("render...");
-        const { search,selectedCats,cats,catsFromServer,isLoading,errorMessage,alert } = this.state
+        const { search,selectedCats,catsFromServer,isLoading,errorMessage,alert } = this.state
 
         const mySearchInputValue = search.toLowerCase();
+
         const filteredCatsData = catsFromServer.filter((cat) => {
             const catLowerCaseName = cat.name.toLowerCase();
             return catLowerCaseName.includes(mySearchInputValue);
         });
+
         const filteredSelectedCats = selectedCats.filter((cat) => {
             const catLowerCaseName = cat.name.toLowerCase();
             return catLowerCaseName.includes(mySearchInputValue);
@@ -109,16 +108,7 @@ class App extends React.Component {
         return (
             <div className="app">
                 {
-                    alert.active &&
-                    <div className="app__alert">
-                        <h2>The cat named <span>{alert.value} </span> has already been added</h2>
-                        <button
-                            className="app__alert-button"
-                            onClick={this.alertDisable}
-                        >
-                            OK
-                        </button>
-                    </div>
+                    alert.active && <Alert title={alert.title} alertDisable={this.alertDisable}/>
                 }
 
                 <div className="app__header">
@@ -133,14 +123,13 @@ class App extends React.Component {
                     </div>
                 </div>
 
-
-
-
                 <main className="app__main">
+                    {/*AVAILABLE CATS*/}
                     <div className="app__main-available app__main-block">
                         <h2>Available cats</h2>
                         <ul className="app__main-list">
-                            {isLoading && <div className="app__loading-container"><LoadingAnimationCat /></div> }
+                            {isLoading && <div className="app__loading-container"><Loading /></div> }
+                            {errorMessage && <div>{errorMessage}</div>}
                             {
                                 filteredCatsData.map((cat) => {
                                     return (
@@ -153,13 +142,11 @@ class App extends React.Component {
                                 })}
                         </ul>
                     </div>
-                    <div className="app__main-divider">
-                        <span></span>
-                    </div>
+                    {/*SELECTED CATS*/}
                     <div className="app__main-selected app__main-block">
                         <h2>Selected cats <span>{selectedCats.length}</span></h2>
                         <ul className="app__main-list">
-                            {isLoading && <div className="app__loading-container"><LoadingAnimationCat /></div> }
+                            {isLoading && <div className="app__loading-container"><Loading /></div> }
                             {!!selectedCats.length &&
                             filteredSelectedCats.map((cat) => {
                                 return (
@@ -173,14 +160,7 @@ class App extends React.Component {
                             })}
                         </ul>
                     </div>
-
-
-
                 </main>
-
-
-
-                {errorMessage && <div>{errorMessage}</div>}
             </div>
         );
     }

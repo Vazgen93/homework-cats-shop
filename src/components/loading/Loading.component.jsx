@@ -1,8 +1,8 @@
 import {Component}  from 'react';
 //STYLES
-import './loadingAnimationCat.scss';
+import './loading.scss';
 
-class LoadingAnimationCatComponent extends Component{
+class LoadingComponent extends Component{
     render (){
         return(
             <div className="cat">
@@ -22,4 +22,4 @@ class LoadingAnimationCatComponent extends Component{
     }
 }
 
-export default LoadingAnimationCatComponent;
+export default LoadingComponent;
