@@ -41,16 +41,16 @@
 
 // console.log(Component.state);
 
-class Person {
-    constructor(name, surname) {
-        this.name = name;
-        this.surname = surname;
-    }
+// class Person {
+//     constructor(name, surname) {
+//         this.name = name;
+//         this.surname = surname;
+//     }
 
-    printFullName() {
-        console.log(this.name + " " + this.surname);
-    }
-}
+//     printFullName() {
+//         console.log(this.name + " " + this.surname);
+//     }
+// }
 
 // const person1 = {
 //     name: "Aram",
@@ -76,4 +76,22 @@ class Person {
 //     },
 // };
 
-console.log(!!{}); // --->>>  falsy values --->>> null, undefinnd, 0, "", false
+// console.log(!!{}); // --->>>  falsy values --->>> null, undefinnd, 0, "", false
+const arr = [5,41,111,1,-5,101]
+arr.sort((a,b)=>a-b)
+console.log(arr);
+
+
+// for(let i = 0; i < arr.length ; i++){
+//     let min = i;
+//     for(let j = min ; j < arr.length ; j++){
+//         if(arr[min] > arr[j]){
+//             min = j
+//         }
+//     }
+//     let save = arr[i]
+//     arr[i] = arr[min]
+//     arr[min] = save
+// }
+
+// console.log(arr);

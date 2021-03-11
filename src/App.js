@@ -8,7 +8,7 @@ import SearchInput from "./components/search-input/SearchInput";
 
 // STYLES
 import "./app.scss";
-import Alert from "./components/alert/Alert.component";
+
 
 
 class App extends React.Component {
@@ -18,7 +18,6 @@ class App extends React.Component {
             search: "",
             selectedCats:[],
             catsFromServer: [],
-            alert:{id:'',active:false,value:''}
         };
     }
 
@@ -49,49 +48,37 @@ class App extends React.Component {
         this.setState({ search: searchValue });
     };
 
-    alertDisable = () => {
-        this.setState({alert: {active:false,title:''}})
-    }
 
-    deleteCatHandle = (id) => {
-        const cats = [...this.state.selectedCats];
-        const selectedUserIndex = this.state.selectedCats.findIndex((item, idx) => {
-            return item.id === id;
+
+    transferCatHandle = (id,type) => {
+        const availableCats = [...this.state.catsFromServer];
+        const selectedCats = [...this.state.selectedCats];
+
+        if(type === 'available'){
+            const availableCatIndex = availableCats.findIndex((item) => {
+                return item.id === id;
+            });
+            const selectedUserItem = availableCats.splice(availableCatIndex, 1);
+            selectedCats.push(selectedUserItem[0])
+        }
+
+        if(type === 'selected'){
+            const selectedCatIndex = selectedCats.findIndex((item) => {
+                return item.id === id;
+            });
+            const availableCatItem = selectedCats.splice(selectedCatIndex, 1);
+            availableCats.push(availableCatItem[0])
+        }
+
+        this.setState({
+            catsFromServer: availableCats,
+            selectedCats:selectedCats
         });
-        console.log(selectedUserIndex);
-        cats.splice(selectedUserIndex, 1);
-        console.log(cats);
-        this.setState({ selectedCats: cats });
     };
 
-    addSelectedCat = (id) => {
-        const cats = [...this.state.selectedCats];
-        console.log('cats',cats)
-        const selectedUserItem = this.state.catsFromServer.find((item) => {
-            return item.id === id;
-        });
-        let absentCat = true
-        if(cats.length >= 1){
-            cats.map((item)=>{
-                if (item.id === selectedUserItem.id) {
-                    absentCat = false
-                }
-            })
-        }
-        if(absentCat){
-            cats.push(selectedUserItem)
-            this.setState({selectedCats:cats})
-        }else{
-            this.setState({alert: {
-                    id:selectedUserItem.id,
-                    active:true,
-                    title:selectedUserItem.name
-            }})
-        }
-    }
 
     render() {
-        const { search,selectedCats,catsFromServer,isLoading,errorMessage,alert } = this.state
+        const { search,selectedCats,catsFromServer,isLoading,errorMessage } = this.state
 
         const mySearchInputValue = search.toLowerCase();
 
@@ -107,10 +94,6 @@ class App extends React.Component {
 
         return (
             <div className="app">
-                {
-                    alert.active && <Alert title={alert.title} alertDisable={this.alertDisable}/>
-                }
-
                 <div className="app__header">
                     <h1>Catty shop</h1>
                     <div className="app__search">
@@ -136,7 +119,8 @@ class App extends React.Component {
                                         <CardItem
                                             key={('A'+cat.id)}
                                             cat={cat}
-                                            addSelectedCat={this.addSelectedCat}
+                                            transferCatHandle={this.transferCatHandle}
+                                            cardType="available"
                                         />
                                     );
                                 })}
@@ -153,8 +137,8 @@ class App extends React.Component {
                                     <CardItem
                                         key={('B'+cat.id)}
                                         cat={cat}
-                                        deleteCatHandle={this.deleteCatHandle}
-                                        buttonDelete={true}
+                                        transferCatHandle={this.transferCatHandle}
+                                        cardType="selected"
                                     />
                                 );
                             })}
